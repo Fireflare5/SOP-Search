@@ -1,0 +1,72 @@
+
+
+
+This SOP defines roles, responsibilities, and procedures for administrators managing the Canvas Learning Management System (LMS) at our institution. It includes: 
+● Account and User Management 
+● Course and Content Management 
+● Technical Support and Troubleshooting 
+● Data and Analytics 
+● Integration and Customization 
+● Training and Support 
+[Identify the roles and responsibilities of each person involved in the SOP] Canvas Administrator 
+● Oversees system-wide configurations and customizations 
+● Manages user accounts, roles, and permissions 
+● Serves as point of contact for technical support and troubleshooting 
+● Maintains data analytics for stakeholder reporting 
+● Coordinates integrations with all external tools or platforms 
+● Conducts training and communicates updates to the institution 
+Lead Canvassador 
+● Collaborate with the Canvas Administrator to develop and organize course content ● Follow guidelines for consistent course design and branding 
+● Leads the Canvassador Team 
+● Beta tests new additions to Canvas 
+SIS Administrator 
+● Syncs SIS to Canvas creating the courses
+1. Account and User Management 
+1.1 Configure and Customize the Canvas Instance 
+● Access the Administrator Settings to adjust branding, themes, and system settings to align with the institution’s identity and requirements. 
+● Create and manage sub-accounts to reflect our hierarchy. 
+1.2 Manage User Roles and Permissions 
+● Create or edit roles to match the district needs. 
+● Assign permissions carefully to maintain proper access control while allowing necessary functionality. 
+1.3 Oversee User Accounts 
+● Onboarding New Users: 
+○ Coordinate with HR to retrieve user details. 
+○ Automate or manually create accounts, ensuring correct roles are assigned. ● Offboarding and Maintenance: 
+○ Monitor lists of inactive or departing users; promptly remove or deactivate accounts to maintain system security per technology guidelines. 
+2. Course and Content Management 
+2.1 Create and Manage Course Templates 
+● Develop standardized course homepages and shells for consistent appearance and navigation across courses. 
+● Update templates annually or as needed to incorporate new requirements or features. 2.2 Organize and Structure Course Content 
+● Utilize modules to group related content, activities, and assessments. ● Provide guidelines or checklists to instructors to ensure consistent module usage and naming conventions. 
+2.3 Collaborate with Instructors and Instructional Designers 
+● Offer consultative services for designing in and out of class experiences.
+● Provide best practices for creating or importing content (e.g., quizzes, assignments, discussion boards). 
+3. Technical Support and Troubleshooting 
+3.1 Provide Tier 1 and Tier 2 Support 
+● Serve as a primary contact for Canvas-related questions from faculty, staff, students and parents. 
+● Escalate advanced technical issues to vendor support or internal teams as needed. 3.2 Diagnose and Resolve Issues 
+● Monitor Canvas status (e.g., from vendor dashboards or announcements). ● Document common issues and solutions to build an internal knowledge base. 
+4. Data and Analytics 
+4.1 Generate and Analyze Reports 
+● Use Canvas analytics to monitor learner progress, engagement, and course effectiveness. 
+● Share data insights (e.g., enrollment trends, grade distributions) with leaders. 4.2 Leverage Admin Analytics 
+● Examine institution-wide usage metrics (e.g., login frequency, time spent). ● Identify opportunities for targeted intervention based on student performance. 
+5. Integration and Customization 
+5.1 Ensure Seamless Integration with External Tools 
+● Configure and maintain integrations for third-party publishers, etc. 
+● Coordinate with the technology and SIS Administrator for compatibility and security checks. 
+5.2 Customize the User Interface and Branding 
+● Align Canvas look and feel with the institution’s identity standards. 
+● Test customizations thoroughly to avoid negatively impacting user experience. 5.3 Set Up and Manage Sub-Accounts 
+● Organize sub-accounts (colleges, departments, or grade levels) to ensure consistent structure.
+● Delegate sub-account administrative rights to department leads if necessary. 6. Training and Support 
+6.1 Develop and Deliver Personalized Training 
+● Provide role-specific training for administrators, teachers, students and parents. ● Offer periodic refreshers or onboarding sessions each semester or academic year. 
+6.2 Create Documentation and Resources 
+● Publish training guides, video tutorials, and FAQs in a central knowledge repository. ● Update documentation as Canvas rolls out new features. 
+6.3 Stay Updated on New Canvas Features 
+● Regularly review Canvas release notes and training webinars. 
+● Communicate relevant changes or enhancements to the wider institution. 
+Additional information to complete the task. (optional) 
+Who/What/When is this SOP being communicated. 
+External contacts to support the procedure
