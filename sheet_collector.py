@@ -1,8 +1,5 @@
-import os.path
-
 import requests as re
 import pandas as pd
-from io import StringIO
 
 def collect_sheet(sheet_id: str, sheet_name: str = "lists") -> pd.DataFrame:
     url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
