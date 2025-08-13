@@ -1,10 +1,8 @@
 from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
-import pandas as pd
 import os
 from GDocs_Scraper import GDocsScraper
 from sheet_collector import collect_sheet
-from tqdm import tqdm
 
 class Update:
     def __init__(self,):
