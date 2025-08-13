@@ -10,4 +10,4 @@ As for the search algorithm, it can be broken down into a few parts, Title Searc
 Note: In order for the SOP to be accessed it has to be shared with the main acount. This should be doable by just granting everyone in the organization access and putting the link in the lists Google sheet.
 Important note, the end of the link needs to be removed as https://docs.google.com/document/d/{docId}/edit?tab=t.0 will not work. The link should end with the doc id: https://docs.google.com/document/d/{docId}
 
-It also needs a way to store common searches and their desired results to improve the accuracy.
+It also needs a way to store common searches and their desired results to improve the accuracy. It needs to be tested with multiple people.
