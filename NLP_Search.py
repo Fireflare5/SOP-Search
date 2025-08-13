@@ -103,36 +103,40 @@ class Search:
         linked = self.df["Linked"].to_list()
         count_list = []
         for index, (desc, link) in enumerate(zip(descs, linked)):
-            count = 0
-            title = self.df["Title"].to_list()[index]
-            tags = self.df["Tags"].to_list()[index]
-            if self.TitleSearch(title):
-                count = 500
-            else:
-                Ttokens = word_tokenize(title)
-                if link:
-                    doc = GDocsScraper(os.path.basename(desc),local=True).text
-                    #print(doc)
-                    tokens = word_tokenize(doc)
+            try:
+                count = 0
+                title = self.df["Title"].to_list()[index]
+                tags = self.df["Tags"].to_list()[index]
+                if self.TitleSearch(title):
+                    count = 500
                 else:
-                    tokens = word_tokenize(desc)
-                for search_word in self.SearchTokens:
-                    if pos_tag([search_word])[0][1] == "NNS":
-                        count = self.SimilarTS(Ttokens, count, search_word[:-1], title)
-                    count = self.SimilarTS(Ttokens, count, search_word, title)
-                for search_word in self.SearchCull:
-                    if pos_tag([search_word])[0][1] == "NNS":
-                        #print(self.SearchCull, search_word)
-                        count = self.Count(count,tokens, search_word[:-1])
-                        count = self.TagSearch(count, search_word[:-1], tags)
-                    count = self.Count(count, tokens, search_word)
-                    count = self.TagSearch(count, search_word, tags)
-                    count = self.SentenceSearch(count, tokens)
-                try:
-                    count = count / len(self.SearchCull)
-                except:
-                    raise Exception("SOP not found")
-            count_list.append((count, self.df[self.df["Description"] == desc]["Title"].to_list()[0], desc))
+                    Ttokens = word_tokenize(title)
+                    if link:
+                        doc = GDocsScraper(os.path.basename(desc),local=True).text
+                        #print(doc)
+                        tokens = word_tokenize(doc)
+                    else:
+                        tokens = word_tokenize(desc)
+                    for search_word in self.SearchTokens:
+                        if pos_tag([search_word])[0][1] == "NNS":
+                            count = self.SimilarTS(Ttokens, count, search_word[:-1], title)
+                        count = self.SimilarTS(Ttokens, count, search_word, title)
+                    for search_word in self.SearchCull:
+                        if pos_tag([search_word])[0][1] == "NNS":
+                            #print(self.SearchCull, search_word)
+                            count = self.Count(count,tokens, search_word[:-1])
+                            count = self.TagSearch(count, search_word[:-1], tags)
+                        count = self.Count(count, tokens, search_word)
+                        count = self.TagSearch(count, search_word, tags)
+                        count = self.SentenceSearch(count, tokens)
+                    try:
+                        count = count / len(self.SearchCull)
+                    except:
+                        raise Exception("SOP not found")
+                count_list.append((count, self.df[self.df["Description"] == desc]["Title"].to_list()[0], desc))
+            except Exception as e:
+                print(f"Error during deep search: {e}")
+                pass
         count_list.sort(key=self.SortCount, reverse=True)
         self.SOP = [SOP[1:] for SOP in count_list]
                 
