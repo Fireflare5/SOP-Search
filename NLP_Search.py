@@ -1,21 +1,28 @@
+# Import necessary libraries
 from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
 import os
 from GDocs_Scraper import GDocsScraper
 from sheet_collector import collect_sheet
+from typing import List, Tuple
 
 class Update:
-    def __init__(self,):
-        #print("Updating SOPs...")
+    def __init__(self,) -> None:
+        """Updates the local SOP files
+        """
         self.df = collect_sheet("150ygap01bZaEbxKNFHNXIee60i2AiNySWz6EijS5G4k", "lists")
         self.ids = [os.path.basename(link) for link in self.df["Description"].to_list()]
         for id in self.ids:
-            #print(f"Updating {id}...")
             GDocsScraper(id, skip=False, local=True, Update=True)
 
 class Search:
-    
-    def __init__(self, Search: str = "",):
+
+    def __init__(self, Search: str = "",) -> None:
+        """A search background program for SOPs.
+
+        Args:
+            Search (str, optional): The search input. Defaults to "".
+        """
         self.Search = Search
         self.SOP = None
         if Search != "":
@@ -24,27 +31,58 @@ class Search:
             except Exception as e:
                 print(f"Error during search: {e}")
     
-    def SCorrections(self, Search: str = "",):
+    def SCorrections(self, Search: str = "",) -> None:
+        """Corrects the search string.
+
+        Args:
+            Search (str, optional): The seach input. Defaults to "".
+        """
         if self.Search == "":
             self.Search = Search
-        tokens = word_tokenize(self.Search.lower())
                 
-    def SOPSearch(self, Search: str = "",):
-        self.SCorrections(Search)
-        self.Cull()
-        self.df = collect_sheet("150ygap01bZaEbxKNFHNXIee60i2AiNySWz6EijS5G4k", "lists")
-        self.DeepSearch()
+    def SOPSearch(self, Search: str = "",) -> None:
+        """The main search function.
+
+        Args:
+            Search (str, optional): The search input. Defaults to "".
+
+        Raises:
+            Exception: The SOP was not found. Meaning no SOPs matched the search or there was an error during the search.
+        """
+        self.SCorrections(Search)# Correct the search string
+        self.Cull()# Cull the Search for keywords
+        self.df = collect_sheet("150ygap01bZaEbxKNFHNXIee60i2AiNySWz6EijS5G4k", "lists")# Get the list of SOPs
+        self.DeepSearch()# Run the deep search
         if self.SOP is None:
             raise Exception("SOP not found")
     
         
-    def TitleSearch(self, title) -> bool:
+    def TitleSearch(self, title: str) -> bool:
+        """Matches the title of the SOP with the search input.
+
+        Args:
+            title (str): The title of an SOP.
+
+        Returns:
+            bool: A true of false value indicating if the title matches the search input.
+        """
         if self.Search.lower() == title.lower():
             self.SOP = self.df[self.df["Title"] == title]
             return True
         return False
     
-    def SimilarTS(self, Ttokens, count, search_word, title):
+    def SimilarTS(self, Ttokens: List, count: int, search_word: str, title: str) -> int:
+        """Matches the search input with a similar SOP title.
+
+        Args:
+            Ttokens (List): The tokenized title of an SOP.
+            count (int): Current score of an the SOP
+            search_word (str): The word to search for in the title.
+            title (str): The title of an SOP.
+
+        Returns:
+            int: New score of the SOP.
+        """
         if search_word.capitalize() in Ttokens:
             count += 5
         if search_word.upper() in Ttokens:
@@ -59,9 +97,10 @@ class Search:
             count += 10
         return count
     
-    def Cull(self,):
+    def Cull(self,) -> None:
+        """Culls the search input to remove unnecessary words.
+        """
         self.SearchTokens = word_tokenize(self.Search)
-        #print(pos_tag(self.SearchTokens))
         self.sentence = []
         if "``" in self.SearchTokens:
             for word in self.SearchTokens[self.SearchTokens.index('``') + 1:]:
@@ -73,7 +112,17 @@ class Search:
         if self.SearchCull == []:
             self.SearchCull = self.SearchTokens
     
-    def Count(self, count, tokens, search_word):
+    def Count(self, count: int, tokens: List, search_word: str) -> int:
+        """Scores the SOP based on the number of times a search word appears in the description.
+
+        Args:
+            count (int): Current score of the SOP
+            tokens (List): A tokenized version of the SOP
+            search_word (str): Word to search for in the SOP
+
+        Returns:
+            int: New score of the SOP.
+        """
         if search_word.lower() in tokens:
             count += tokens.count(search_word.lower())
         if search_word.capitalize() in tokens:
@@ -82,21 +131,53 @@ class Search:
             count += tokens.count(search_word.upper())
         return count
     
-    def TagSearch(self, count, search_word, tags,):
+    def TagSearch(self, count: int, search_word: str, tags: List,) -> int:
+        """Scores the SOP based on if a search word is in the tags.
+
+        Args:
+            count (int): Current score of the SOP
+            search_word (str): Word to search for in the tags
+            tags (List): List of tags for the SOP
+
+        Returns:
+            int: The new score of the SOP
+        """
         if search_word.capitalize() in tags:
             count += 5
         return count
     
-    def SortCount(self, x):
+    def SortCount(self, x: Tuple) -> int:
+        """A function to sort the SOPs based on their score.
+
+        Args:
+            x (Tuple): A tuple containing the score and other information about the SOP.
+
+        Returns:
+            int: The absolute value of the score to be used for sorting
+        """
         return abs(x[0])
     
-    def SentenceSearch(self, count, tokens):
+    def SentenceSearch(self, count: int, tokens: List) -> int:
+        """Scores an SOP based on specific sentences in the search input
+
+        Args:
+            count (int): Current score of the SOP
+            tokens (List): Tokenized version of the SOP
+
+        Returns:
+            int: The new score of the SOP
+        """
         if self.sentence != []:
             if set(self.sentence).issubset(set(tokens)):
                 count += 5 * len(self.sentence)
         return count
     
-    def DeepSearch(self,):
+    def DeepSearch(self,) -> None:
+        """The Deep Search function that searches and scores the SOPs based on the search input.
+
+        Raises:
+            Exception: An SOP was not found or there was an error during the search.
+        """
         descs = self.df["Description"].to_list()
         linked = self.df["Linked"].to_list()
         count_list = []
@@ -111,7 +192,6 @@ class Search:
                     Ttokens = word_tokenize(title)
                     if link:
                         doc = GDocsScraper(os.path.basename(desc),local=True).text
-                        #print(doc)
                         tokens = word_tokenize(doc)
                     else:
                         tokens = word_tokenize(desc)
@@ -121,7 +201,6 @@ class Search:
                         count = self.SimilarTS(Ttokens, count, search_word, title)
                     for search_word in self.SearchCull:
                         if pos_tag([search_word])[0][1] == "NNS":
-                            #print(self.SearchCull, search_word)
                             count = self.Count(count,tokens, search_word[:-1])
                             count = self.TagSearch(count, search_word[:-1], tags)
                         count = self.Count(count, tokens, search_word)

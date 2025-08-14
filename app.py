@@ -1,3 +1,4 @@
+#Import necessary libraries
 from dash import Dash, dcc, html, Input, Output, callback, State, ctx, set_props, clientside_callback, Patch, DiskcacheManager, CeleryManager, no_update
 import diskcache
 import dash_ag_grid as dag
@@ -5,12 +6,15 @@ import dash_bootstrap_components as dbc
 from NLP_Search import Search, Update
 from datetime import datetime
 
+#Initialize the app with themes and a background manager
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
 cache = diskcache.Cache("./cache")
 background_callback_manager = DiskcacheManager(cache)
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css, dbc.icons.FONT_AWESOME])
 
 rowData = [{'Title': 'SOP Title', 'Link': 'SOP Link'}]
+
+# The color mode switch for light/dark mode
 color_switch = html.Span(
     [
         dbc.Label(class_name="fa fa-moon", html_for="color-mode-switch"),
@@ -19,6 +23,7 @@ color_switch = html.Span(
     ],
 )
 
+# The Search Results Grid
 grid = dag.AgGrid(
             id='results-grid',
             rowData=rowData,
@@ -27,6 +32,7 @@ grid = dag.AgGrid(
             defaultColDef={"flex": 1, "minWidth": 150, "sortable": False, "resizable": True, "filter": True},
         )
 
+# The layout of the app
 app.layout = dbc.Container(
     [
         html.Div(id="header",
@@ -48,6 +54,7 @@ app.layout = dbc.Container(
     fluid=True,
 )
 
+# A timer to update the SOP list every 10 minutes
 @callback(
     Output("interval", "id"),
     Input("interval", "n_intervals"),
@@ -61,6 +68,7 @@ def update_clock(n):
     print(f"Updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     return no_update
 
+# Display search results in the grid
 @callback(
     Output('results-grid', 'rowData'),
     Output('results-grid','columnDefs'),
@@ -75,7 +83,7 @@ def out(input_value):
         return [data, defs]
     return [[{'Title': 'SOP Title', 'Link': 'SOP Link'}], [{"field": 'Title'}, {"field": 'Link'},]]
 
-
+# Color mode switch callback
 clientside_callback(
     """
     (switchOn) => {
