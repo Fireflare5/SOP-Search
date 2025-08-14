@@ -14,3 +14,5 @@ It also needs a way to store common searches and their desired results to improv
 
 Example of what the SOP list should look like
 <img width="1061" height="841" alt="Screenshot 2025-08-13 at 3 26 59 PM" src="https://github.com/user-attachments/assets/f5ad4389-9097-4a19-8029-b5e2cbc1e58a" />
+
+If there are any questions about how it works or something isn't working I can be reached at canonsparks@icloud.com
