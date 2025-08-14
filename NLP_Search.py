@@ -83,18 +83,10 @@ class Search:
         Returns:
             int: New score of the SOP.
         """
-        if search_word.capitalize() in Ttokens:
-            count += 5
-        if search_word.upper() in Ttokens:
-            count += 5
-        if search_word.lower() in Ttokens:
-            count += 5
-        if search_word.capitalize() == title:
+        if (search_word.capitalize() or search_word.upper() or search_word.lower()) in Ttokens:
             count += 10
-        if search_word.lower() == title:
-            count += 10
-        if search_word.upper() == title:
-            count += 10
+        if title in [search_word.capitalize(),search_word.lower(),search_word.upper()]:
+            count += 15
         return count
     
     def Cull(self,) -> None:
