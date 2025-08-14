@@ -92,14 +92,17 @@ class Search:
     def Cull(self,) -> None:
         """Culls the search input to remove unnecessary words.
         """
-        self.SearchTokens = word_tokenize(self.Search)
+        self.SearchTokens = word_tokenize(self.Search)# Tokenize the search input
         self.sentence = []
+        
+        # Identify sentences to search for in the SOP
         if "``" in self.SearchTokens:
             for word in self.SearchTokens[self.SearchTokens.index('``') + 1:]:
                 if "''" in word:
                     break
                 else:
                     self.sentence.append(word)
+        # Remove unnecessary words from the search input
         self.SearchCull = [word[0] for word in pos_tag(self.SearchTokens) if word[1] not in ["CC", "IN", "DT", "PRP", "VBP", "''", "``", "TO", "PRP$", ".", "WP", "VBZ",","] and word[0] not in ["process", "SOP", "do"]]
         if self.SearchCull == []:
             self.SearchCull = self.SearchTokens
