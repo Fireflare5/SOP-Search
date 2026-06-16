@@ -5,6 +5,7 @@ import os
 from GDocs_Scraper import GDocsScraper
 from sheet_collector import collect_sheet
 from typing import List, Tuple
+import cryptography
 
 class Update:
     def __init__(self,) -> None:
