@@ -7,28 +7,18 @@
 int main() {
     uint2048_t a;
     uint2048_t b;
-    uint4096_t c;
+    uint2048_t c;
     init2048(&a);
     init2048(&b);
-    init4096(&c);
+    init2048(&c);
 
-    time_t raw_time;
-    for(int i = 0; i < 256; ++i) {
-        time(&raw_time);
-        int x = raw_time;
-        for(int j = 0; j < i * 256; ++j) {
-            x = raw_time * x + 3 % 0xFF;
-        }
-        a.bytes[i] = x;
-        for(int j = 0; j < (i - 1) * 256; ++j) {
-            x = raw_time * x + 3 % 0xFF;
-        }
-        b.bytes[i] = x;
-    }
+    a.bytes[0] = 0xFF;
+    a.bytes[1] = 0x1;
+    b.bytes[0] = 0x76;
 
-    c = multiply2048(a,b);
+    c = subtract2048(a,b);
 
-    for(int i = 511; i >= 0; --i) {
+    for(int i = 255; i >= 0; --i) {
         for(int j = 0; j < 8; ++j) {
             if(!(j % 4)) {
                 printf(" ");

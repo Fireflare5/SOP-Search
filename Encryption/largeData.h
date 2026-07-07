@@ -30,7 +30,6 @@ void init4096(uint4096_t *bytes) {
 // Add two 4096 bit numbers
 // a + b = c
 uint4096_t add4096(uint4096_t a, uint4096_t b) {
-    // Create a basket for carrying
     uint4096_t basket;
     init4096(&basket);
 
@@ -64,16 +63,44 @@ uint4096_t add4096(uint4096_t a, uint4096_t b) {
     return a;
 }
 
+uint4096_t subtract4096(uint4096_t a, uint4096_t b) {
+    uint4096_t basket;
+    init4096(&basket);
+
+    int j = 1;
+    
+    while(j) {
+
+        j = 0;
+
+        for(int i = 0; i < 512; ++i) {
+            basket.bytes[i] = (~a.bytes[i]) & b.bytes[i];
+            a.bytes[i] ^= b.bytes[i];
+            j = basket.bytes[i] ? 1 : 0;
+        }
+
+        for(int i = 511; i >= 0; --i) {
+            basket.bytes[i] <<= 1;
+            basket.bytes[i] = basket.bytes[i - 1] & 0x80 && i ? 0x1 : 0x0;
+        }
+
+        b = basket;
+    }
+    return a;
+}
+
 // 2048bit unsigned int
 typedef struct {
     unsigned char bytes[256];
 } uint2048_t;
 
+// Initialize by setting all bits in memory to zeros.
 void init2048(uint2048_t *bytes) {
     memset(bytes, 0, 256);
 }
 
-// 2048bit addition implementation
+// Add two 2048 bit numbers
+// a + b = c
 uint2048_t add2048(uint2048_t a, uint2048_t b) {
     uint2048_t basket;
     init2048(&basket);
@@ -93,52 +120,68 @@ uint2048_t add2048(uint2048_t a, uint2048_t b) {
             basket.bytes[i] <<= 1;
 
             // Shifts end bit to start bit of the next byte
-            if(i) {
-                basket.bytes[i] ^= basket.bytes[i-1] & 0x80 ? 0x01 : 0x00;
-            }
+            basket.bytes[i] ^= basket.bytes[i-1] & 0x80 && i ? 0x01 : 0x00;
 
             b.bytes[i] = basket.bytes[i];
 
-            if(b.bytes[i]) {
-                j = 1;
-            }
+            j = b.bytes[i] ? 1 : 0;
         }
     }
 
     return a;
 }
 
-uint4096_t multiply2048(uint2048_t ab, uint2048_t b) {
+uint2048_t subtract2048(uint2048_t a, uint2048_t b) {
+    uint2048_t basket;
+    init2048(&basket);
+
+    int j = 1;
+    
+    while(j) {
+
+        j = 0;
+
+        for(int i = 0; i < 256; ++i) {
+            basket.bytes[i] = (~a.bytes[i]) & b.bytes[i];
+            a.bytes[i] ^= b.bytes[i];
+            j = basket.bytes[i] ? 1 : 0;
+        }
+
+        for(int i = 255; i >= 0; --i) {
+            basket.bytes[i] <<= 1;
+            basket.bytes[i] = basket.bytes[i - 1] & 0x80 && i ? 0x1 : 0x0;
+        }
+
+        b = basket;
+    }
+    return a;
+}
+
+// Multiply two 2048 bit numbers
+// Outputs a 4096 bit number
+// a * b = c
+uint4096_t multiply2048(uint2048_t a, uint2048_t b) {
+    uint4096_t c;
+    init4096(&c);
+
     uint4096_t out;
     init4096(&out);
 
-    uint4096_t a;
-    init4096(&a);
-
-    int m = 0;
-
     for(int i = 0; i < 256; ++i) {
-        a.bytes[i] = ab.bytes[i];
+        c.bytes[i] = a.bytes[i];
     }
 
     for(int i = 0; i < 256; ++i) {
-        if(b.bytes[i]) {
-            for(int j = 0; j < 8; ++j) {
-                if(b.bytes[i] & 0x01) {
-                    for(int k = 0; k < j + i * 8 - m; ++k) {
-                        for(int l = 511; l >= 0; --l) {
-                            a.bytes[l] <<= 1;
+        for(int j = 0; j < 8; ++j) {
+            
+            out = b.bytes[i] & 0x1 ? add4096(out, c) : out;
 
-                            if(l) {
-                                a.bytes[l] ^= a.bytes[l-1] & 0x80 ? 0x01 : 0x00;
-                            }
-                        }
-                    }
-                    out = add4096(out, a);
-                    m = j + i * 8;
-                }
-                b.bytes[i] >>= 1;
+            for(int k = 511; k >= 0; --k) {
+                c.bytes[k] <<= 1;
+                c.bytes[k] ^= c.bytes[k - 1] & 0x80 && k ? 0x1 : 0x0;
             }
+
+            b.bytes[i] >>= 1;
         }
     }
 
