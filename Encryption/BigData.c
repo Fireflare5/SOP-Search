@@ -12,9 +12,8 @@ int main() {
     init2048(&b);
     init2048(&c);
 
-    a.bytes[0] = 0xFF;
-    a.bytes[1] = 0x1;
-    b.bytes[0] = 0x76;
+    a.bytes[0] = 0x18;
+    b.bytes[0] = 0x20;
 
     c = subtract2048(a,b);
 

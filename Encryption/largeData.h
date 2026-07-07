@@ -48,15 +48,11 @@ uint4096_t add4096(uint4096_t a, uint4096_t b) {
             basket.bytes[i] <<= 1;
 
             // Shifts end bit to start bit of the next byte
-            if(i) {
-                basket.bytes[i] ^= basket.bytes[i-1] & 0x80 ? 0x01 : 0x00;
-            }
+            basket.bytes[i] ^= basket.bytes[i-1] & 0x80 && i ? 0x01 : 0x00;
 
             b.bytes[i] = basket.bytes[i];
 
-            if(b.bytes[i]) {
-                j = 1;
-            }
+            j = b.bytes[i] ? 1 : j;
         }
     }
 
@@ -76,12 +72,12 @@ uint4096_t subtract4096(uint4096_t a, uint4096_t b) {
         for(int i = 0; i < 512; ++i) {
             basket.bytes[i] = (~a.bytes[i]) & b.bytes[i];
             a.bytes[i] ^= b.bytes[i];
-            j = basket.bytes[i] ? 1 : 0;
+            j = basket.bytes[i] ? 1 : j;
         }
 
         for(int i = 511; i >= 0; --i) {
             basket.bytes[i] <<= 1;
-            basket.bytes[i] = basket.bytes[i - 1] & 0x80 && i ? 0x1 : 0x0;
+            basket.bytes[i] ^= basket.bytes[i - 1] & 0x80 && i ? 0x1 : 0x0;
         }
 
         b = basket;
@@ -124,7 +120,7 @@ uint2048_t add2048(uint2048_t a, uint2048_t b) {
 
             b.bytes[i] = basket.bytes[i];
 
-            j = b.bytes[i] ? 1 : 0;
+            j = b.bytes[i] ? 1 : j;
         }
     }
 
@@ -144,12 +140,12 @@ uint2048_t subtract2048(uint2048_t a, uint2048_t b) {
         for(int i = 0; i < 256; ++i) {
             basket.bytes[i] = (~a.bytes[i]) & b.bytes[i];
             a.bytes[i] ^= b.bytes[i];
-            j = basket.bytes[i] ? 1 : 0;
+            j = basket.bytes[i] ? 1 : j;
         }
 
         for(int i = 255; i >= 0; --i) {
             basket.bytes[i] <<= 1;
-            basket.bytes[i] = basket.bytes[i - 1] & 0x80 && i ? 0x1 : 0x0;
+            basket.bytes[i] ^= basket.bytes[i - 1] & 0x80 && i ? 0x1 : 0x0;
         }
 
         b = basket;
