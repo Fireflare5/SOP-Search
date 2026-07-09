@@ -184,5 +184,50 @@ uint4096_t multiply2048(uint2048_t a, uint2048_t b) {
     return out;
 }
 
+uint2048_t division2048(uint2048_t a, uint2048_t b) {
+    uint2048_t out;
+    init2048(&out);
+
+    int k = 1;
+
+    while(k) {
+        k = 0;
+        for(int i = 255; i >= 0; --i) {
+            if(a.bytes[i]) {
+                while(1) {
+                    if(b.bytes[i] >= a.bytes[i]) {
+                        while(b.bytes[i] >= a.bytes[i] && i >= 0) {
+                            while(b.bytes[i] > a.bytes[i]) {
+                                for(int j = 0; j < 256; ++j) {
+                                    b.bytes[j] >>= 1;
+                                    b.bytes[j] ^= b.bytes[j + 1] & 0x01 && j != 255 ? 0x80 : 0x00;
+                                } 
+                                --k;
+                            }
+                            --i;
+                        }
+                        break;
+                    } else {
+                        for(int j = 255; j >= 0; --j) {
+                            b.bytes[j] <<= 1;
+                            b.bytes[j] ^= b.bytes[j - 1] & 0x80 && j ? 0x01 : 0x00;
+                        }
+                        ++k;
+                    }
+                }
+                break;
+            }
+        }
+        if(k < 0) {
+            return a;
+        } else if(k) {
+            out.bytes[0] ^= 0x01;
+            
+        }
+    }
+    
+    return b;
+}
+
 //###########################################################
 

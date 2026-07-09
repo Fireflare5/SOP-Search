@@ -12,10 +12,10 @@ int main() {
     init2048(&b);
     init2048(&c);
 
-    a.bytes[0] = 0x18;
-    b.bytes[0] = 0x20;
+    a.bytes[0] = 0x05;
+    b.bytes[0] = 0x0E;
 
-    c = subtract2048(a,b);
+    c = division2048(a,b);
 
     for(int i = 255; i >= 0; --i) {
         for(int j = 0; j < 8; ++j) {
