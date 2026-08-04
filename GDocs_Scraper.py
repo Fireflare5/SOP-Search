@@ -4,6 +4,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+import os
 
 class GDocsScraper:
     def __init__(self, document_id: str, skip: bool=False, local: bool=False, Update: bool=False) -> None:
@@ -16,6 +17,12 @@ class GDocsScraper:
             Update (bool, optional): Identifies if the local files should be updated. Defaults to False.
         """
         self.document_id = document_id
+        CONFIG_DIR = os.path.expanduser("~/.config/sop-search")
+        os.makedirs(CONFIG_DIR, exist_ok=True)
+        os.chmod(CONFIG_DIR, 0o700)
+
+        self.TOKEN_PATH = os.path.join(CONFIG_DIR, "token.json")
+        self.CREDENTIALS_PATH = os.path.join(CONFIG_DIR, "credentials.json")
         self.creds = None
         self.SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
         if os.path.exists(f"files/{document_id}.txt") and local and not Update:
@@ -30,17 +37,17 @@ class GDocsScraper:
     def _authenticate(self) -> None:
         """Authenticates the user to access Google Docs API.
         """
-        if os.path.exists("token.json"):
-            self.creds = Credentials.from_authorized_user_file("token.json", self.SCOPES)
+        if os.path.exists(self.TOKEN_PATH):
+            self.creds = Credentials.from_authorized_user_file(self.TOKEN_PATH, self.SCOPES)
         if not self.creds or not self.creds.valid:
             if self.creds and self.creds.expired and self.creds.refresh_token:
                 self.creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", self.SCOPES
+                    self.CREDENTIALS_PATH, self.SCOPES
                 )
                 self.creds = flow.run_local_server(port=0)
-            with open("token.json", "w") as token:
+            with open(self.TOKEN_PATH, "w") as token:
                 token.write(self.creds.to_json())
     
     def _scrape(self, skip: bool, local: bool, Update: bool) -> None:
