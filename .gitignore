@@ -213,4 +213,3 @@ doc.txt
 files/*
 !files/.gitkeep
 lists.csv
-li
