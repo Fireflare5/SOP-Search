@@ -17,12 +17,9 @@ class GDocsScraper:
             Update (bool, optional): Identifies if the local files should be updated. Defaults to False.
         """
         self.document_id = document_id
-        CONFIG_DIR = os.path.expanduser("~/.config/sop-search")
-        os.makedirs(CONFIG_DIR, exist_ok=True)
-        os.chmod(CONFIG_DIR, 0o700)
 
-        self.TOKEN_PATH = os.path.join(CONFIG_DIR, "token.json")
-        self.CREDENTIALS_PATH = os.path.join(CONFIG_DIR, "credentials.json")
+        self.TOKEN_PATH = "token.json"
+        self.CREDENTIALS_PATH = "credentials.json"
         self.creds = None
         self.SCOPES = ["https://www.googleapis.com/auth/documents.readonly"]
         if os.path.exists(f"files/{document_id}.txt") and local and not Update:

@@ -1,11 +1,12 @@
 # Import necessary libraries
+import nltk
 from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
+nltk.download('punkt_tab')
 import os
 from GDocs_Scraper import GDocsScraper
 from sheet_collector import collect_sheet
 from typing import List, Tuple
-import cryptography
 
 class Update:
     def __init__(self,) -> None:
@@ -55,8 +56,7 @@ class Search:
         self.df = collect_sheet("150ygap01bZaEbxKNFHNXIee60i2AiNySWz6EijS5G4k", "lists")# Get the list of SOPs
         self.DeepSearch()# Run the deep search
         if self.SOP is None:
-            raise Exception("SOP not found")
-    
+            self.SOP = []
         
     def TitleSearch(self, title: str) -> bool:
         """Matches the title of the SOP with the search input.
@@ -211,7 +211,8 @@ class Search:
                 print(f"Error during deep search: {e}")
                 pass
         count_list.sort(key=self.SortCount, reverse=True)
-        self.SOP = [SOP[1:] for SOP in count_list]
+        # always provide a list (empty if nothing matched)
+        self.SOP = [SOP[1:] for SOP in count_list] if count_list else []
                 
                         
 

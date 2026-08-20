@@ -1,1 +1,0 @@
-The location for SOP'sto be stored(REQUIRED)

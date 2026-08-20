@@ -1,100 +1,59 @@
-#Import necessary libraries
-from dash import Dash, dcc, html, Input, Output, callback, State, ctx, set_props, clientside_callback, Patch, DiskcacheManager, CeleryManager, no_update
-import diskcache
-import dash_ag_grid as dag
-import dash_bootstrap_components as dbc
+from flask import Flask, render_template, request, jsonify
 from NLP_Search import Search, Update
-from datetime import datetime
+from time import sleep
+from threading import Thread
+from waitress import serve
+import os
+from dotenv import load_dotenv
 
-#Initialize the app with themes and a background manager
-dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
-cache = diskcache.Cache("./cache")
-background_callback_manager = DiskcacheManager(cache)
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc_css, dbc.icons.FONT_AWESOME])
+app = Flask(__name__)
 
-rowData = [{'Title': 'SOP Title', 'Link': 'SOP Link'}]
+# 1. This route simply delivers your HTML file when you first visit the page
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-# The color mode switch for light/dark mode
-color_switch = html.Span(
-    [
-        dbc.Label(class_name="fa fa-moon", html_for="color-mode-switch"),
-        dbc.Switch(id="color-mode-switch", value=False, className="d-inline-block ms-1", persistence="True"),
-        dbc.Label(class_name="fa fa-sun", html_for="color-mode-switch"),
-    ],
-)
+# 2. This endpoint handles data requests in the background without refreshing 
+@app.route('/search', methods=['POST'])
+def handle_submit():
+    # Read incoming JSON data sent by JavaScript
+    text = request.get_json()
+    input_value = text.get('SearchTerm')
 
-# The Search Results Grid
-grid = dag.AgGrid(
-            id='results-grid',
-            rowData=rowData,
-            columnDefs=[{"field": 'Title'}, {"field": 'Link'},],
-            columnSize="sizeToFit",
-            defaultColDef={"flex": 1, "minWidth": 150, "sortable": False, "resizable": True, "filter": True},
-        )
-
-# The layout of the app
-app.layout = dbc.Container(
-    [
-        html.Div(id="header",
-                 className="p-2 rounded-3 position-relative bg-primary",
-                 children=[
-                     html.Div([
-                         html.H1("SOP Search", className="display-3 fw-bold text-dark"),
-                         html.P("By Canon Sparks", className="text-dark"),
-                         ]),
-                     ]),
-        color_switch,
-        html.Br(),
-        dcc.Interval(id="interval", interval=1000*60*5, n_intervals=0),
-        dbc.Input(id='my-input', type='text', placeholder="Search or enter SOP name:", debounce=True, className="rounded-pill"),
-        html.Br(),
-        grid,
-    ],
-    className="dbc dbc-ag-grid",
-    fluid=True,
-)
-
-# A timer to update the SOP list every 10 minutes
-@callback(
-    Output("interval", "id"),
-    Input("interval", "n_intervals"),
-    prevent_initial_call=True,
-    background=True,
-    manager=background_callback_manager,
-)
-def update_clock(n):
-    print(f"Updating at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    Update()
-    print(f"Updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    return no_update
-
-# Display search results in the grid
-@callback(
-    Output('results-grid', 'rowData'),
-    Output('results-grid','columnDefs'),
-    Input('my-input', 'value'),
-    prevent_initial_call=True,
-)
-def out(input_value):
-    if input_value is not None and input_value.strip() != "":
+    SOPS = Search(input_value).SOP
+    timeout = 10.0  # seconds
+    interval = 0.1
+    waited = 0.0
+    while SOPS is None and waited < timeout:
+        sleep(interval)
+        waited += interval
         SOPS = Search(input_value).SOP
-        data = [{'Title': SOP[0], 'Link': SOP[1]} for SOP in SOPS] # type: ignore
-        defs=[{"field": 'Title'}, {"field": 'Link', "cellRenderer":"Link"},]
-        return [data, defs]
-    return [[{'Title': 'SOP Title', 'Link': 'SOP Link'}], [{"field": 'Title'}, {"field": 'Link'},]]
+    if SOPS is None:
+        return jsonify({"status": "error", "message": "No SOPs available"}), 404
+    data = [{'Title': SOP[0], 'Link': SOP[1]} for SOP in SOPS]
 
-# Color mode switch callback
-clientside_callback(
-    """
-    (switchOn) => {
-        document.documentElement.setAttribute('data-bs-theme', switchOn ? 'light' : 'dark'); 
-        return window.dash_clientside.no_update
-    }
-    """,
-    Output("color-mode-switch", "id"),
-    Input("color-mode-switch", "value"),
-)
+    # Send a JSON response back to the browser
+    return jsonify({
+        "status": "success",
+        "search": data
+    })
+    
+def KcolcEtadpu():
+    while(True):
+        sleep(5*60)
+        print("starting update")
+        Update()
+        print("Updated SOPs")
+
+
+def UpdateClock():
+    t1 = Thread(target=KcolcEtadpu)
+    t1.start()
 
 if __name__ == '__main__':
-    app.run(debug=False)
-
+    Update()
+    UpdateClock()
+    load_dotenv()
+    IP = os.getenv("IP_ADDRESS")
+    PORT = os.getenv("PORT")
+    serve(app, host=IP, port=int(PORT))

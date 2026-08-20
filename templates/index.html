@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            body {
+                background-color: #2E2E2E;
+                color: #BDBDBD;
+                margin:0;
+            }
+            header {
+                height: 110px;
+                width: 100vw;
+                font-size: 20px;
+            }
+            .heading {
+                padding: 5px;
+            }
+            #SOPSearch {
+                background-color: #338654;
+                color: #000000;
+                border: 3px solid #FFC72C;
+                border-radius: 10px;
+                width: 100uw;
+                padding: 25px;
+                margin-bottom: 10px;
+            }
+            table {
+                background-color: #338654;
+                border-radius: 10px;
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            tr, td, th {
+                border: 1px solid #FFC72C;
+                color: #000000;
+                text-align: left;
+                padding-left: 15px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                
+            }
+
+            td {
+                background-color: #2C683F;
+                color: #FFC72C;
+            }
+
+            th {
+                border: 3px solid #FFC72C;
+            }
+            tr:first-child th:first-child,
+            tr:first-child td:first-child {
+                border-top-left-radius: 10px;
+            }
+            tr:first-child th:last-child,
+            tr:first-child td:last-child {
+                border-top-right-radius: 10px;
+            }
+            tr:last-child td:first-child {
+                border-bottom-left-radius: 10px;
+            }
+            tr:last-child td:last-child {
+                border-bottom-right-radius: 10px;
+            }
+
+            
+
+        </style>
+        <title>SOP Search</title>
+    </head>
+    <body>
+        <header>
+            <h1 class="heading">SOP Search</h1>
+            <b class="heading">By Canon Sparks</b>
+        </header>
+        <div id="SOPSearch">
+            <label for="SOPS">Search SOPs:</label>
+            <input type="search" id="SOPS" name="SOPS"></input>
+            <button type="submit" id="searchButton">Search</button>
+        </div>
+
+        <script>
+            // Generates a result table
+            function generateTable(data) {
+                // Create the table
+                const table = document.createElement("table");
+                // Give the table an id
+                table.id = "SearchResults";
+                //  Split the data list into objects
+                const headers = Object.keys(data[0]);
+                // Create the table header row
+                const headerRow = table.insertRow();
+                headers.toReversed().forEach(headerText => {
+                    const th = document.createElement("th");
+                    th.textContent = headerText;
+                    headerRow.appendChild(th);
+                });
+                // Create new rows for each result
+                data.forEach(item => {
+                    const row = table.insertRow();
+                    headers.toReversed().forEach(header => {
+                    const cell = row.insertCell();
+                    if(header == "Title") {
+                        cell.textContent = item[header];
+                    } else {
+                        const a = document.createElement("a");
+                        a.textContent = item[header];
+                        a.href = item[header];
+                        cell.append(a);
+                    }
+                    });
+                });
+                // Add the table to the page
+                document.body.appendChild(table);
+            }
+            // Detect search input
+            document.getElementById("searchButton").addEventListener("click", async function() {
+                // Get search input
+                const val = document.getElementById("SOPS").value;
+                // send the input to the backend python
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ SearchTerm: val })
+                })
+                // wait for the response
+                const result = await response.json();
+                // check if the table already exists to prevent duplicates
+                if(document.getElementById("SearchResults")) {
+                    document.getElementById("SearchResults").remove();
+                }
+                // Generate new table
+                generateTable(result.search);
+                val = result.message;
+
+            });
+        </script>
+    </body>
+</html>
